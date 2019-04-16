@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -36,7 +37,7 @@ func printDuration(deadline time.Time) {
 	timeduration := deadline.Sub(time.Now())
 	timeduration = timeduration.Round(time.Minute)
 	duration := durafmt.Parse(timeduration)
-	fmt.Println(duration)
+	log.Println(duration)
 }
 
 var cmd = &cobra.Command{
@@ -50,8 +51,8 @@ var cmd = &cobra.Command{
 		stopChan := make(chan os.Signal, 2)
 		signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 
+		printDuration(deadline)
 		for deadline.After(time.Now()) {
-			printDuration(deadline)
 			select {
 			case <-tickerCh:
 				printDuration(deadline)
